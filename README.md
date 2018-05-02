@@ -13,26 +13,33 @@ Six different combinations of P, I, D are experimented.
 >* 1.Proportional part only -- `pid.Init(1, 0.0, 0.0)`
 
 When there is only proportional component, the car oscillates around the center of the track and eventually drives off the road when  approach the curve. This is expected since when only consider the proportional component, the output steering angle is not stable and at best can achieve this oscillating behavior.
+[![1-pid-1.0-0.0-0.0](https://img.youtube.com/vi/nbd3M4utCFI/0.jpg)](https://youtu.be/nbd3M4utCFI "1-pid-1.0-0.0-0.0")
 
 >* 2.Half of the initial proportional value -- `pid.Init(0.5, 0.0, 0.0)`
 
 When reducing the proportional component to the half of the initial value (i.e. from 1.0 to 0.5), the car is still oscillating around the center of the lane, but is able to makes it through the curve. This is due to the fact that the output steering angle is also reduced to half, so the magnitude of the change of the angles is smaller compared to case 1. However, the trajectory is not that smooth and the driving experience can be further improved.
+[![2-pid-0.5-0.0-0.0](https://img.youtube.com/vi/iCm2ZLaElGk/0.jpg)](https://youtu.be/iCm2ZLaElGk "2-pid-0.5-0.0-0.0")
 
 >* 3.Add the differential part -- `pid.Init(0.5, 0.0, 1.0)`
 
 Following the suggestions from the lecture, I add the differential part to counteract the overshoot due to the pure proportional component. The trajectory improves a little bit in the straight lane, while when entering the curved lane, the car drifts out the track. This may due to the fact that the differential component is not large enough
+[![3-pid-0.5-0.0-1.0](https://img.youtube.com/vi/qRdoIc17g2Q/0.jpg)](https://youtu.be/qRdoIc17g2Q "3-pid-0.5-0.0-1.0")
 
 >* 4.Increase the ratio of differential component and proportional component, i.e., Kd/Kp -- `pid.Init(0.2, 0.0, 3.0)`
 
 In this configuration, the differential component is increased from 1.0 to 3.0 and the proportional component is reduced from 0.5 to 0.2. Now the car can finishes the whole loop without drifting out of the track.
+[![4-pid-0.2-0.0-3.0](https://img.youtube.com/vi/sipTKTAaH5o/0.jpg)](https://youtu.be/sipTKTAaH5o "4-pid-0.2-0.0-3.0")
 
 >* 5.Add integral part -- `pid.Init(0.2, 0.01, 3.0)`
 
 In this test, integral part was added to check it's impact on the car's control. As can be seen from the video. The car drives off road rather quickly at the beginning of the simulation. This is because the integral component is usually used to composent the constant bias exits in the cross-track-error, while in our simulation, we do not have this bias.
+[![5-pid-0.2-0.01-3.0](https://img.youtube.com/vi/azLdhSD-udQ/0.jpg)](https://youtu.be/azLdhSD-udQ "5-pid-0.2-0.01-3.0")
 
 >* 6.Reduce integral part significantly (x100 times) -- `pid.Init(0.2, 0.0001, 3.0)`
 
 After reducing the integral part to a really small value (0.0001), we can see that the car is again able to finish the loop without leaving the track.
+
+[![6-pid-0.2-0.0001-3.0](https://img.youtube.com/vi/xTOSYJKuC7M/0.jpg)](https://youtu.be/xTOSYJKuC7M "6-pid-0.2-0.0001-3.0")
 
 So, after the above experiments, the final combination I choose is number 4, `pid.Init(0.2, 0.0, 3.0)`, which offers the most stable trajectory and results.
 
