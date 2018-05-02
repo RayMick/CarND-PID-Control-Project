@@ -2,6 +2,41 @@
 Self-Driving Car Engineer Nanodegree Program
 
 ---
+## Implementation
+The PID controller is implemented following the algorithm described in the class lectures. The total error function is defined as `p * p_error + Ki * i_error + Kd * d_error;`, where the three terms are corresponding to the proportional, integral and differential components.
+
+
+## Reflection -- Parameter Tuning and  P, I, D components impact
+
+The P, I, D coefficients are tuned manually. The process is described below.
+Six different combinations of P, I, D are experimented.
+>* 1.Proportional part only -- `pid.Init(1, 0.0, 0.0)`
+
+When there is only proportional component, the car oscillates around the center of the track and eventually drives off the road when  approach the curve. This is expected since when only consider the proportional component, the output steering angle is not stable and at best can achieve this oscillating behavior.
+
+>* 2.Half of the initial proportional value -- `pid.Init(0.5, 0.0, 0.0)`
+
+When reducing the proportional component to the half of the initial value (i.e. from 1.0 to 0.5), the car is still oscillating around the center of the lane, but is able to makes it through the curve. This is due to the fact that the output steering angle is also reduced to half, so the magnitude of the change of the angles is smaller compared to case 1. However, the trajectory is not that smooth and the driving experience can be further improved.
+
+>* 3.Add the differential part -- `pid.Init(0.5, 0.0, 1.0)`
+
+Following the suggestions from the lecture, I add the differential part to counteract the overshoot due to the pure proportional component. The trajectory improves a little bit in the straight lane, while when entering the curved lane, the car drifts out the track. This may due to the fact that the differential component is not large enough
+
+>* 4.Increase the ratio of differential component and proportional component, i.e., Kd/Kp -- `pid.Init(0.2, 0.0, 3.0)`
+
+In this configuration, the differential component is increased from 1.0 to 3.0 and the proportional component is reduced from 0.5 to 0.2. Now the car can finishes the whole loop without drifting out of the track.
+
+>* 5.Add integral part -- `pid.Init(0.2, 0.01, 3.0)`
+
+In this test, integral part was added to check it's impact on the car's control. As can be seen from the video. The car drives off road rather quickly at the beginning of the simulation. This is because the integral component is usually used to composent the constant bias exits in the cross-track-error, while in our simulation, we do not have this bias.
+
+>* 6.Reduce integral part significantly (x100 times) -- `pid.Init(0.2, 0.0001, 3.0)`
+
+After reducing the integral part to a really small value (0.0001), we can see that the car is again able to finish the loop without leaving the track.
+
+So, after the above experiments, the final combination I choose is number 4, `pid.Init(0.2, 0.0, 3.0)`, which offers the most stable trajectory and results.
+
+---
 
 ## Dependencies
 
@@ -19,7 +54,7 @@ Self-Driving Car Engineer Nanodegree Program
   * Run either `./install-mac.sh` or `./install-ubuntu.sh`.
   * If you install from source, checkout to commit `e94b6e1`, i.e.
     ```
-    git clone https://github.com/uWebSockets/uWebSockets 
+    git clone https://github.com/uWebSockets/uWebSockets
     cd uWebSockets
     git checkout e94b6e1
     ```
@@ -33,7 +68,7 @@ There's an experimental patch for windows in this [PR](https://github.com/udacit
 1. Clone this repo.
 2. Make a build directory: `mkdir build && cd build`
 3. Compile: `cmake .. && make`
-4. Run it: `./pid`. 
+4. Run it: `./pid`.
 
 Tips for setting up your environment can be found [here](https://classroom.udacity.com/nanodegrees/nd013/parts/40f38239-66b6-46ec-ae68-03afd8a601c8/modules/0949fca6-b379-42af-a919-ee50aa304e6a/lessons/f758c44c-5e40-4e01-93b5-1a82aa4e044f/concepts/23d376c7-0195-4276-bdf0-e02f1f3c665d)
 
@@ -95,4 +130,3 @@ still be compilable with cmake and make./
 
 ## How to write a README
 A well written README file can enhance your project and portfolio.  Develop your abilities to create professional README files by completing [this free course](https://www.udacity.com/course/writing-readmes--ud777).
-
